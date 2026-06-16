@@ -517,7 +517,7 @@
 
     <div class="package-card">
       <div class="pkg-video-wrap">
-        <video loop playsinline controls style="width:100%;height:100%;object-fit:cover;cursor:pointer;">
+        <video loop playsinline muted autoplay style="width:100%;height:100%;object-fit:cover;cursor:pointer;" class="scroll-autoplay">
           <source src="demo-standard.mp4" type="video/mp4" />
         </video>
         <div class="pkg-overlay"></div>
@@ -542,7 +542,7 @@
         ★ MOST CHOSEN
       </div>
       <div class="pkg-video-wrap">
-        <video loop playsinline controls style="width:100%;height:100%;object-fit:cover;cursor:pointer;">
+        <video loop playsinline muted autoplay style="width:100%;height:100%;object-fit:cover;cursor:pointer;" class="scroll-autoplay">
           <source src="demo-premium.mp4" type="video/mp4" />
         </video>
         <div class="pkg-overlay"></div>
@@ -560,7 +560,7 @@
 
     <div class="package-card">
       <div class="pkg-video-wrap">
-        <video loop playsinline controls style="width:100%;height:100%;object-fit:cover;cursor:pointer;">
+        <video loop playsinline muted autoplay style="width:100%;height:100%;object-fit:cover;cursor:pointer;" class="scroll-autoplay">
           <source src="demo-tour.mp4" type="video/mp4" />
         </video>
         <div class="pkg-overlay"></div>
@@ -581,7 +581,7 @@
   <!-- Bottom: Cinematic full width 16:9 -->
   <div class="package-card" style="width:100%;">
     <div class="pkg-video-wrap" style="aspect-ratio:16/9;">
-      <video loop playsinline controls style="width:100%;height:100%;object-fit:cover;cursor:pointer;">
+      <video loop playsinline muted autoplay style="width:100%;height:100%;object-fit:cover;cursor:pointer;" class="scroll-autoplay">
         <source src="demo-cinematic.mp4" type="video/mp4" />
       </video>
       <div class="pkg-overlay"></div>
@@ -818,6 +818,21 @@
     });
   });
 
+</script>
+
+<script>
+  // Auto-play videos when scrolled into view
+  const scrollVideos = document.querySelectorAll('.scroll-autoplay');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.play();
+      } else {
+        entry.target.pause();
+      }
+    });
+  }, { threshold: 0.3 });
+  scrollVideos.forEach(v => observer.observe(v));
 </script>
 </body>
 </html>
