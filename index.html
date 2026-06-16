@@ -873,44 +873,6 @@
 
 </script>
 
-<script>
-  // Auto-play background videos on scroll
-  const scrollVideos = document.querySelectorAll('.scroll-autoplay');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) { entry.target.play(); }
-      else { entry.target.pause(); }
-    });
-  }, { threshold: 0.3 });
-  scrollVideos.forEach(v => observer.observe(v));
-
-  // Modal click-to-watch with sound
-  const modal = document.getElementById('videoModal');
-  const modalPlayer = document.getElementById('videoModalPlayer');
-  const modalClose = document.getElementById('videoModalClose');
-
-  document.querySelectorAll('.package-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const bgVideo = card.querySelector('video.scroll-autoplay');
-      if (!bgVideo) return;
-      const src = bgVideo.querySelector('source').src;
-      modalPlayer.src = src;
-      modalPlayer.currentTime = 0;
-      modal.classList.add('active');
-      modalPlayer.play();
-    });
-  });
-
-  function closeModal() {
-    modal.classList.remove('active');
-    modalPlayer.pause();
-    modalPlayer.src = '';
-  }
-  modalClose.addEventListener('click', closeModal);
-  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
-</script>
-
 <!-- VIDEO MODAL -->
 <div class="video-modal-overlay" id="videoModal">
   <div class="video-modal-inner">
@@ -919,5 +881,54 @@
   </div>
 </div>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // 1. Auto-play muted background videos when scrolled into view
+    const scrollVideos = document.querySelectorAll('.scroll-autoplay');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.play(); }
+        else { entry.target.pause(); }
+      });
+    }, { threshold: 0.3 });
+    scrollVideos.forEach(v => observer.observe(v));
+
+    // 2. Modal: click card → fullscreen with sound
+    const modal = document.getElementById('videoModal');
+    const modalPlayer = document.getElementById('videoModalPlayer');
+    const modalClose = document.getElementById('videoModalClose');
+    let activeCard = null;
+
+    document.querySelectorAll('.package-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const bgVideo = card.querySelector('video.scroll-autoplay');
+        if (!bgVideo) return;
+        activeCard = card;
+        modalPlayer.src = bgVideo.querySelector('source').getAttribute('src');
+        modalPlayer.currentTime = 0;
+        modal.classList.add('active');
+        modalPlayer.play();
+      });
+    });
+
+    function closeModal() {
+      modal.classList.remove('active');
+      modalPlayer.pause();
+      modalPlayer.src = '';
+      // Resume background video
+      if (activeCard) {
+        const bgVideo = activeCard.querySelector('video.scroll-autoplay');
+        if (bgVideo) { bgVideo.muted = true; bgVideo.play(); }
+        activeCard = null;
+      }
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+  });
+</script>
 </body>
 </html>
